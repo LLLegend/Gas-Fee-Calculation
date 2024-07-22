@@ -26,6 +26,12 @@ def get_histories():
     db.close_connection()
     return jsonify({'start_date': start_date, 'end_date': end_date, 'result': result})
 
+@app.route('/api/v1.0/test', methods=['GET'])
+def test():
+    db = DB()
+    result = db.test()
+    db.close_connection()
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)

@@ -1,0 +1,4 @@
+mysql-connector-python==9.0.0
+flask==2.2.2
+requests==2.31.0
+Werkzeug==2.2.2

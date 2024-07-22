@@ -3,7 +3,7 @@ from datetime import date
 
 
 class DB:
-    def __init__(self, host='localhost', user='root', password='test', database='test'):
+    def __init__(self, host='db', user='test_user', password='test123', database='test_db'):
         self.host = host
         self.user = user
         self.password = password
@@ -24,7 +24,7 @@ class DB:
 
     def get_current_price_date(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT year(date), month(date), day(date) FROM prices ORDER BY date DESC LIMIT 1")
+        cursor.execute("SELECT year(date), month(date), day(date) FROM prices ORDER BY price_date DESC LIMIT 1")
         data = cursor.fetchall()
         cursor.close()
         return date(data[0][0], data[0][1], data[0][2])
@@ -50,8 +50,8 @@ class DB:
     ):
         cursor = self.connection.cursor()
         sql = """
-                INSERT INTO transactions (block_number, transaction_hash, transaction_fees, timestamp)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO transactions (block_number, transaction_hash, gas_price, gas_used, timestamp)
+                VALUES (%s, %s, %s, %s, %s)
                """
         value = [(block_number[i], transaction_hash[i], gas_price[i], gas_used[i], timestamp[i])
                  for i in range(len(block_number))]
@@ -70,3 +70,8 @@ class DB:
 
     def close_connection(self):
         self.connection.close()
+
+    def test(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SHOW TABLES;")
+        return cursor.fetchall()
