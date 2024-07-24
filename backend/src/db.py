@@ -1,9 +1,9 @@
 import mysql.connector
 from datetime import date
-
+import utils
 
 class DB:
-    def __init__(self, host='db', user='test_user', password='test123', database='test_db'):
+    def __init__(self, host='127.0.0.1', user='test_user', password='test123', database='test_db'):
         self.host = host
         self.user = user
         self.password = password
@@ -12,7 +12,8 @@ class DB:
             host=self.host,
             user=self.user,
             password=self.password,
-            database=self.database
+            database=self.database,
+            port=3306
         )
 
     def get_current_block_number(self):
@@ -20,25 +21,53 @@ class DB:
         cursor.execute("SELECT block_number FROM transactions ORDER BY block_number DESC LIMIT 1")
         data = cursor.fetchall()
         cursor.close()
-        return data[0][0]
+        if data:
+            return data[0][0]
+        else:
+            return None
 
     def get_current_price_date(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT year(date), month(date), day(date) FROM prices ORDER BY price_date DESC LIMIT 1")
+        cursor.execute("SELECT year(price_date), month(price_date), day(price_date) FROM prices ORDER BY price_date DESC LIMIT 1")
         data = cursor.fetchall()
         cursor.close()
-        return date(data[0][0], data[0][1], data[0][2])
+        if data:
+            return date(data[0][0], data[0][1], data[0][2])
+        else:
+            return None
 
-    def get_fee_by_txn(self, txn_hash):
+    def get_price_by_date(self, price_date: date):
+        year = price_date.year
+        month = price_date.month
+        day = price_date.day
         cursor = self.connection.cursor()
-        sql = ""
+        sql = f"SELECT price FROM prices WHERE year(price_date) = {year} AND month(price_date) = {month} AND day(price_date) = {day}"
         cursor.execute(sql)
         data = cursor.fetchall()
         cursor.close()
-        return data[0][0]
+        if data:
+            return data[0][0]
+        else:
+            return None
+
+    def get_gas_by_txn(self, txn_hash):
+        cursor = self.connection.cursor()
+        sql = f"SELECT gas_price, gas_used, transaction_timestamp FROM transactions WHERE transaction_hash = '{txn_hash}'"
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        cursor.close()
+        return int(data[0][0]), int(data[0][1]), int(data[0][2])
 
     def get_histories(self, start_date, end_date):
-        return
+        cursor = self.connection.cursor()
+        start_timestamp = utils.date_str_to_timestamp(start_date)
+        end_timestamp = utils.date_str_to_timestamp(end_date)
+        print(start_timestamp, end_timestamp)
+        sql = f"SELECT * FROM transactions WHERE transaction_timestamp >= {start_timestamp} AND transaction_timestamp <= {end_timestamp}"
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        cursor.close()
+        return data
 
     def insert_transactions(
             self,
@@ -50,7 +79,7 @@ class DB:
     ):
         cursor = self.connection.cursor()
         sql = """
-                INSERT INTO transactions (block_number, transaction_hash, gas_price, gas_used, timestamp)
+                INSERT INTO transactions (block_number, transaction_hash, gas_price, gas_used, transaction_timestamp)
                 VALUES (%s, %s, %s, %s, %s)
                """
         value = [(block_number[i], transaction_hash[i], gas_price[i], gas_used[i], timestamp[i])
@@ -59,9 +88,9 @@ class DB:
 
         self.connection.commit()
 
-    def insert_eth_history_prices_table(self, dates: list, prices: list):
+    def insert_eth_history_prices(self, dates: list, prices: list):
         cursor = self.connection.cursor()
-        sql = "INSERT INTO prices (date, price) VALUES (%s, %s)"
+        sql = "INSERT INTO prices (price_date, price) VALUES (%s, %s)"
         value = [(dates[i], prices[i])
                  for i in range(len(dates))]
         cursor.executemany(sql, value)

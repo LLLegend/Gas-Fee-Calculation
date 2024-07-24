@@ -5,9 +5,9 @@ USE test_db;
 CREATE TABLE IF NOT EXISTS transactions (
     block_number int,
     transaction_hash VARCHAR(255),
-    gas_price int,
-    gas_used int,
-    timestamp int
+    gas_price BIGINT,
+    gas_used BIGINT,
+    transaction_timestamp int
 );
 
 CREATE TABLE IF NOT EXISTS prices (
