@@ -13,6 +13,7 @@ class EtherscanDataProvider:
             "Connection": "close"
         }
         self.max_retries = 5
+        self.wait_time = 0.3
 
     def get_token_transfers(self, address, token_address, start_block, end_block):
         # ERC-20 transfers from an address filtered by a token contract
@@ -25,9 +26,10 @@ class EtherscanDataProvider:
                 if resp.status_code == 200:
                     return resp.json()["result"]
                 else:
+                    time.sleep(self.wait_time)
                     continue
         print("Unable to get token transfers from etherscan, please check your network, the arguments, and api key!")
-        return False
+        return None
 
     def get_newest_block(self):
         for i in range(self.max_retries):
@@ -39,6 +41,7 @@ class EtherscanDataProvider:
             if resp.status_code == 200:
                 return int(resp.json()["result"])
             else:
+                time.sleep(self.wait_time)
                 continue
         print("Unable to get newest block from etherscan, please check your network or api key!")
         return False

@@ -56,18 +56,24 @@ class DB:
         cursor.execute(sql)
         data = cursor.fetchall()
         cursor.close()
-        return int(data[0][0]), int(data[0][1]), int(data[0][2])
+        if data:
+            return int(data[0][0]), int(data[0][1]), int(data[0][2])
+        else:
+            return None, None, None
 
     def get_histories(self, start_date, end_date):
         cursor = self.connection.cursor()
         start_timestamp = utils.date_str_to_timestamp(start_date)
         end_timestamp = utils.date_str_to_timestamp(end_date)
         print(start_timestamp, end_timestamp)
-        sql = f"SELECT * FROM transactions WHERE transaction_timestamp >= {start_timestamp} AND transaction_timestamp <= {end_timestamp}"
+        sql = f"SELECT DISTINCT * FROM transactions WHERE transaction_timestamp >= {start_timestamp} AND transaction_timestamp <= {end_timestamp}"
         cursor.execute(sql)
         data = cursor.fetchall()
         cursor.close()
-        return data
+        if data:
+            return data
+        else:
+            return None
 
     def insert_transactions(
             self,
@@ -102,5 +108,5 @@ class DB:
 
     def test(self):
         cursor = self.connection.cursor()
-        cursor.execute("SHOW TABLES;")
+        cursor.execute("select * from transactions order by block_number desc limit 10;")
         return cursor.fetchall()

@@ -15,6 +15,7 @@ class BinanceDataProvider:
             'https': 'https://127.0.0.1:7890'
         }
         self.max_retries = 5
+        self.wait_time = 0.3
 
     def get_daily_eth_price_by_timestamp(self, start, end):
         symbol = "ETHUSDT"
@@ -33,6 +34,7 @@ class BinanceDataProvider:
                         close_prices.append(float(resp.json()[j][1]))
                     return close_prices
                 else:
+                    time.sleep(self.wait_time)
                     continue
         print("Unable to get eth prices from Binance, please check your network or the arguments!")
         return False

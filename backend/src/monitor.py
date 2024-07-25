@@ -15,7 +15,7 @@ def prepare_eth_price(db: DB, start_date=date(2021, 1, 1)):
     binance_provider = BinanceDataProvider()
 
     current_date = db.get_current_price_date()
-    newest_date = datetime.now().date()
+    newest_date = datetime.utcnow().date()
 
     # The prices are updated
     if current_date == newest_date:
@@ -77,7 +77,7 @@ def preparing_history_transactions(db: DB, created_block, pool_address, token_0,
             return False
         print("Successfully updating pool transfers\n")
         current_block = end_block
-        time.sleep(0.5)
+        time.sleep(0.3)
     return True
 
 
@@ -105,7 +105,7 @@ def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
     current_date = db.get_current_price_date()
     # update records every 5s (real-time)
     while True:
-        newest_date = datetime.now().date()
+        newest_date = datetime.utcnow().date()
         if current_date != newest_date:
             print("Updating today's ETH price")
             start = utils.date_to_milli_timestamp(newest_date)
@@ -114,6 +114,7 @@ def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
             if (len(prices)) != 0:
                 db.insert_eth_history_prices(dates=[newest_date], prices=prices)
                 print("Finished updating today's ETH price")
+
 
         current_date = db.get_current_price_date()
         if current_date != newest_date:
@@ -156,9 +157,10 @@ if __name__ == "__main__":
     usdc_uniswap_v3_pool = "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
     usdc_token_address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
     weth_token_address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-    update_pool_transfers(
-        pool_address=usdc_uniswap_v3_pool,
-        token_0=usdc_token_address,
-        token_1=weth_token_address,
-        created_block=12376729
-    )
+    while True:
+        update_pool_transfers(
+            pool_address=usdc_uniswap_v3_pool,
+            token_0=usdc_token_address,
+            token_1=weth_token_address,
+            created_block=12376729
+        )
