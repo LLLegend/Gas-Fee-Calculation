@@ -1,9 +1,10 @@
 # Gas-Fee-Calculation
 ## Project Architecture
 ### Overview
-This project is for Tokka Labs Software Engineering Challenge. The system contains two main parts:    
+This project is for Tokka Labs Software Engineering Challenge. The system contains three main parts:    
 1. Real-time WETH-USDC Uniswap pool transaction monitor.    
 2. Backend Service for querying history WETH-USDC Uniswap pool transactions.
+3. Database
 
 This project used Python3 as programming language, MySQL as database, Flask for providing endpoint services, Docker-Compose for project set-up.
 
@@ -53,21 +54,43 @@ monitor.py implemented real logics of data recording. The data recoding contains
 **_The monitor.py is deployed in local host rather than Docker Container in this project because it is very complicated to make backend service container use VPN network that local host uses. But the VPN is required to connect to etherscan and Binance in mainland China._**
 
 ### RESTful API Instructions
+This system provide 2 RESTful APIs
+1. Get `/api/v1.0/transaction-fees`
+   - arguments: 
+     - `txn_hash`, type: string
+   - response:
+     - status_code: 
+       - 200: Success
+       - 400: Bad Request
+       - 404: Not Found
+     - message
+     - results
+2. Get `/api/v1.0/histories`
+   - arguments: 
+     - `start_date`, type: date
+     - `end_date`, type: date
+   - response:
+     - status_code: 
+       - 200: Success
+       - 400: Bad Request
+       - 404: Not Found
+     - message
+     - results
 ### Database
 There are two tables initialized at the database:
 1. `test_db.prices`
 2. `test_db.transactions` 
 
 ## Build & Run Guide
-1. Firstly please make sure you have anaconda and Docker in your computer.  
-2. Create environment for monitor under the project dir:
+Before build & run, please make sure you have anaconda and Docker in your computer and port 3306 and port 5000 are not occupied.  
+1. Create environment for monitor under the project dir:
    1. create new environment: run `conda create -n Gas-Fee-Calculation python=3.9.7`
    2. switch to the environment: run `source activate Gas-Fee-Calculation`
    3. update pip: run `pip install --upgrade pip`
    4. install required packages: run `pip install -r requirements.txt`
-3. Build and run database and backend api services using Docker-Compose under the project dir:
+2. Build and run database and backend api services using Docker-Compose under the project dir:
    1. run `docker compose up -d`
-4. Run the monitor under the project dir:
+3. Run the monitor under the project dir:
    1. run `cd backend/`
    2. run `sh start.sh`
 

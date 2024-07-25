@@ -18,7 +18,7 @@ def get_transaction_fee():
             "message": "Invalid Arguments",
             "results": ""
         }
-        return jsonify(response)
+        return jsonify(response), 400
     db = DB(host="db")
     gas_price, gas_used, timestamp = db.get_gas_by_txn(txn_hash)
     if gas_price is None:
@@ -26,7 +26,7 @@ def get_transaction_fee():
             "message": "Transaction Not Found",
             "results": ""
         }
-        return jsonify(response)
+        return jsonify(response), 404
     gas_in_ETH = utils.cal_fee_price(gas_price, gas_used)
     eth_price = db.get_price_by_date(utils.timestamp_to_date(timestamp))
     db.close_connection()
@@ -35,17 +35,17 @@ def get_transaction_fee():
             "message": "Transaction Not Found",
             "results": ""
         }
-        return jsonify(response)
+        return jsonify(response), 404
 
     results = {
         "txn_hash": txn_hash,
         "fee_price": gas_in_ETH * eth_price
     }
     response = {
-        "message": "Succeed",
+        "message": "Success",
         "results": results
     }
-    return jsonify(response)
+    return jsonify(response), 200
 
 
 # Provide the historical data recording for a given period
@@ -63,7 +63,7 @@ def get_histories():
             "message": "Invalid Arguments",
             "results": ""
         }
-        return jsonify(response)
+        return jsonify(response), 400
     db = DB(host="db")
     results= db.get_histories(start_date, end_date)
     db.close_connection()
@@ -73,16 +73,16 @@ def get_histories():
             "message": "History Transactions Not Found",
             "results": ""
         }
-        return jsonify(response)
+        return jsonify(response), 404
 
     col_name = ["block_number", "transaction_hash", "gas_price", "gas_used", "timestamp"]
     for i in range(len(results)):
         results[i] = dict(zip(col_name, results[i]))
     response = {
-        "message": "Succeed",
+        "message": "Success",
         "results": results
     }
-    return jsonify(response)
+    return jsonify(response), 200
 
 @app.route('/api/v1.0/test', methods=['GET'])
 def test():
