@@ -10,10 +10,6 @@ class BinanceDataProvider:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36",
             "Connection": "close"
         }
-        self.proxies = {
-            'http': 'http://127.0.0.1:7890',
-            'https': 'https://127.0.0.1:7890'
-        }
         self.max_retries = 5
         self.wait_time = 0.3
 
@@ -24,7 +20,7 @@ class BinanceDataProvider:
         for i in range(self.max_retries):
             if start <= end:
                 request_url = (self.api_url + "/api/v3/klines?symbol={}&interval={}&startTime={}&endTime={}".
-                        format(symbol, interval, start, end))
+                               format(symbol, interval, start, end))
 
                 resp = requests.get(request_url, headers=self.headers)
                 if resp.status_code == 200:

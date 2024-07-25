@@ -2,6 +2,7 @@ import mysql.connector
 from datetime import date
 import utils
 
+
 class DB:
     def __init__(self, host='127.0.0.1', user='test_user', password='test123', database='test_db'):
         self.host = host

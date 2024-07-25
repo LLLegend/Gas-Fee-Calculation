@@ -6,6 +6,7 @@ from db import DB
 
 app = Flask(__name__)
 
+
 # Provide the price of fees in USD for a given transaction hash
 # Argument: txn_hash
 # Example: /api/v1.0/transaction_fees?txn_hash=
