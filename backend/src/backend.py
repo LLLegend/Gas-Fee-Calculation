@@ -1,5 +1,4 @@
 import time
-
 from flask import Flask, jsonify, request
 import utils
 from db import DB
@@ -9,7 +8,7 @@ app = Flask(__name__)
 
 # Provide the price of fees in USD for a given transaction hash
 # Argument: txn_hash
-# Example: /api/v1.0/transaction_fees?txn_hash=
+# Example: /api/v1.0/transaction_fees?txn_hash={your_transaction_hash}
 @app.route('/api/v1.0/transaction-fees', methods=['GET'])
 def get_transaction_fee():
     txn_hash = request.args.get('txn_hash')
@@ -84,12 +83,14 @@ def get_histories():
     }
     return jsonify(response), 200
 
+
 @app.route('/api/v1.0/test', methods=['GET'])
 def test():
     db = DB(host="db")
     result = db.test()
     db.close_connection()
     return jsonify({"result": result})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)

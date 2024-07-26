@@ -2,6 +2,7 @@ import time
 import requests
 import os
 
+
 class EtherscanDataProvider:
     def __init__(self, api_key_file_dir="api_keys/etherscan.key"):
         path = os.path.join(os.path.dirname(__file__), api_key_file_dir)
@@ -31,6 +32,7 @@ class EtherscanDataProvider:
         print("Unable to get token transfers from etherscan, please check your network, the arguments, and api key!")
         return None
 
+    # get the newest block in Ethereum mainnet.
     def get_newest_block(self):
         for i in range(self.max_retries):
             request_url = (

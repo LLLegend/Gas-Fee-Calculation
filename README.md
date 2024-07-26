@@ -54,7 +54,7 @@ monitor.py implemented real logics of data recording. The data recoding contains
 **_The monitor.py is deployed in local host rather than Docker Container in this project because it is very complicated to make backend service container use VPN network that local host uses. But the VPN is required to connect to etherscan and Binance in mainland China._**
 
 ### RESTful API Instructions
-This system provide 2 RESTful APIs
+This system provide two RESTful APIs
 1. Get `/api/v1.0/transaction-fees`
    - arguments: 
      - `txn_hash`, type: string
@@ -64,7 +64,7 @@ This system provide 2 RESTful APIs
        - 400: Bad Request
        - 404: Not Found
      - message
-     - results
+     - results: fees in USD of a given transaction
 2. Get `/api/v1.0/histories`
    - arguments: 
      - `start_date`, type: date
@@ -75,7 +75,7 @@ This system provide 2 RESTful APIs
        - 400: Bad Request
        - 404: Not Found
      - message
-     - results
+     - results: list of transactions
 ### Database
 There are two tables initialized at the database:
 1. `test_db.prices`
@@ -95,3 +95,11 @@ Before build & run, please make sure you have anaconda and Docker in your comput
    2. run `sh start.sh`
 
 ## Test Guide
+Unit test is provided in this system.
+
+This system need around 6 hours to synchronize to the newest block because of the limitation of etherscan api. In that, the test cases is based on block data from 06, May, 2021 to 08, May, 2021, which only requires a short waiting of sync. In this way, before testing, please make sure the block number in your computer is more than `12400000`.  
+
+Change dir to src/ and run:  
+`python -m unittest unit_test.TestSystem` 
+
+Otherwise, you can test the correctness of data by your choice through the api. Simply send get request to `127.0.0.1:5000/api/v1.0/transaction-fees?txn_hash={your_transaction_hash}` and `127.0.0.1:5000/api/v1.0/histories?start_date={your_start_date}&end_date={your_end_date}`

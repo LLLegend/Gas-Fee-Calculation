@@ -47,6 +47,7 @@ def prepare_eth_price(db: DB, start_date=date(2021, 1, 1)):
                 print("Successfully update ETH price until {}".format(group[-1]))
     return True
 
+
 # Update pool transaction histories in batch
 def preparing_history_transactions(db: DB, created_block, pool_address, token_0, token_1):
     batch_update_interval = 5000
@@ -81,6 +82,7 @@ def preparing_history_transactions(db: DB, created_block, pool_address, token_0,
     return True
 
 
+# Update pool transfer transactions
 def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
     print("Updating pool transfers...")
 
@@ -96,6 +98,7 @@ def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
         return
     print("Finished/Skip batch updating ETH prices")
 
+    # Batch update for history transactions
     is_succeed = preparing_history_transactions(db, created_block, pool_address, token_0, token_1)
     if not is_succeed:
         print("Please re-run your monitor.")
@@ -115,7 +118,6 @@ def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
                 db.insert_eth_history_prices(dates=[newest_date], prices=prices)
                 print("Finished updating today's ETH price")
 
-
         current_date = db.get_current_price_date()
         if current_date != newest_date:
             print("Failed updating today's ETH price, will try next round.")
@@ -132,6 +134,7 @@ def update_pool_transfers(pool_address, token_0, token_1, created_block=0):
         time.sleep(5)
 
 
+# Update transfer transaction of given pool address and token address
 def update_token_transfers(db: DB, address, token_address, start_block, end_block):
     etherscan_provider = EtherscanDataProvider()
     block_number = []
@@ -152,6 +155,7 @@ def update_token_transfers(db: DB, address, token_address, start_block, end_bloc
             timestamp.append(int(k["timeStamp"]))
         db.insert_transactions(block_number, transaction_hash, gas_price, gas_used, timestamp)
     return True
+
 
 if __name__ == "__main__":
     usdc_uniswap_v3_pool = "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
