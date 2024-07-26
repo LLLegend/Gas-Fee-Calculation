@@ -67,7 +67,7 @@ class DB:
         start_timestamp = utils.date_str_to_timestamp(start_date)
         end_timestamp = utils.date_str_to_timestamp(end_date)
         print(start_timestamp, end_timestamp)
-        sql = f"SELECT DISTINCT * FROM transactions WHERE transaction_timestamp >= {start_timestamp} AND transaction_timestamp <= {end_timestamp}"
+        sql = f"SELECT DISTINCT * FROM transactions WHERE transaction_timestamp >= {start_timestamp} AND transaction_timestamp <= {end_timestamp} ORDER BY block_number ASC"
         cursor.execute(sql)
         data = cursor.fetchall()
         cursor.close()
